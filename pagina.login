@@ -112,7 +112,7 @@
         </p>
       <p>
             Ainda não possui uma conta?
-            <a href="#">Cadastre-se</a>
+            <a href="cadastro.html">Cadastre-se</a>
         </p>
 
   
