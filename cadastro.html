@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - E&Y Tecnologias</title>
+    <title>Cadastro -E&Y Tecnologias</title>
 
     <style>
         * {
@@ -14,7 +14,7 @@
 
         body {
             font-family: Arial, sans-serif;
-            background:#87CEFA;
+            background: #87CEFA;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -33,7 +33,7 @@
 
         h1 {
             text-align: center;
-            color: #4169E1;
+            color: #2563eb;
             margin-bottom: 10px;
         }
 
@@ -229,7 +229,8 @@
                 marcarErro(confirmarSenha, "As senhas não são iguais.");
                 return;
             }
-// ===== SALVANDO O CADASTRO NO NAVEGADOR =====
+
+            // ===== SALVANDO O CADASTRO NO NAVEGADOR =====
 
             // 1. Busca a lista de usuários já salvos no localStorage.
             //    O localStorage só guarda TEXTO, então usamos JSON.parse
@@ -260,7 +261,7 @@
             //    JSON.stringify transforma a lista em texto para poder salvar.
             localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-            // Passou em todas as validações!
+            // Passou em todas as validações e foi salvo!
             mostrarMensagem(
                 "Cadastro realizado, " + nome.value.trim() + "! Redirecionando para o login...",
                 "green"
