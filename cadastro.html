@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - E&Y Tecnologias</title>
+    <title>Cadastro - Tech System</title>
 
     <style>
         * {
@@ -14,11 +14,12 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: #87CEFA;
+            background: #f2f4f7;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
 
         main {
@@ -63,6 +64,11 @@
             border-color: #2563eb;
         }
 
+        /* Borda vermelha quando o campo tiver erro */
+        input.erro {
+            border-color: #dc2626;
+        }
+
         button {
             width: 100%;
             padding: 12px;
@@ -103,30 +109,52 @@
 <body>
 
     <main>
-        <h1> E&Y Tecnologias!</h1>
-        <h2>Área de Login</h2>
+        <h1>Tech System</h1>
+        <h2>Criar Conta</h2>
 
-        <form id="formLogin">
+        <form id="formCadastro">
+
+            <label for="nome">Nome completo:</label>
+            <input
+                type="text"
+                id="nome"
+                placeholder="Digite seu nome"
+                required
+            >
+
+            <label for="email">E-mail:</label>
+            <input
+                type="email"
+                id="email"
+                placeholder="Digite seu e-mail"
+                required
+            >
 
             <label for="usuario">Usuário:</label>
-
             <input
                 type="text"
                 id="usuario"
-                placeholder="Digite seu usuário"
+                placeholder="Escolha um nome de usuário"
                 required
             >
 
             <label for="senha">Senha:</label>
-
             <input
                 type="password"
                 id="senha"
-                placeholder="Digite sua senha"
+                placeholder="Mínimo de 6 caracteres"
                 required
             >
 
-            <button type="submit">Entrar</button>
+            <label for="confirmarSenha">Confirmar senha:</label>
+            <input
+                type="password"
+                id="confirmarSenha"
+                placeholder="Digite a senha novamente"
+                required
+            >
+
+            <button type="submit">Cadastrar</button>
 
         </form>
 
@@ -134,62 +162,114 @@
 
         <div class="links">
             <p>
-                <a href="#">Esqueci minha senha</a>
-            </p>
-
-            <p style="margin-top: 10px;">
-                Ainda não possui uma conta?
-                <a href="cadastro.html">Cadastre-se</a>
+                Já possui uma conta?
+                <a href="login.html">Entrar</a>
             </p>
         </div>
     </main>
 
     <script>
-        const formLogin = document.getElementById("formLogin");
+        const formCadastro = document.getElementById("formCadastro");
+        const mensagem = document.getElementById("mensagem");
 
-        formLogin.addEventListener("submit", function(event) {
+        // Mostra uma mensagem na tela com a cor escolhida
+        function mostrarMensagem(texto, cor) {
+            mensagem.textContent = texto;
+            mensagem.style.color = cor;
+        }
+
+        // Marca o campo com borda vermelha e coloca o cursor nele
+        function marcarErro(campo, texto) {
+            campo.classList.add("erro");
+            campo.focus();
+            mostrarMensagem(texto, "red");
+        }
+
+        formCadastro.addEventListener("submit", function(event) {
             event.preventDefault();
 
-            const usuario = document.getElementById("usuario").value;
-            const senha = document.getElementById("senha").value;
-            const mensagem = document.getElementById("mensagem");
+            const nome = document.getElementById("nome");
+            const email = document.getElementById("email");
+            const usuario = document.getElementById("usuario");
+            const senha = document.getElementById("senha");
+            const confirmarSenha = document.getElementById("confirmarSenha");
 
-            // Busca a lista de usuários salvos pelo cadastro.
-            // Se não tiver ninguém cadastrado, usamos uma lista vazia [].
-            const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            // Limpa os erros da tentativa anterior
+            const campos = [nome, email, usuario, senha, confirmarSenha];
+            campos.forEach(function(campo) {
+                campo.classList.remove("erro");
+            });
 
-            // Aqui vamos guardar a pessoa encontrada (começa vazio)
-            let usuarioEncontrado = null;
-
-            // Login de teste: o admin continua funcionando
-            if (usuario === "admin" && senha === "1234") {
-                usuarioEncontrado = { nome: "Administrador" };
+            // Validação 1: nome com pelo menos 3 letras
+            if (nome.value.trim().length < 3) {
+                marcarErro(nome, "O nome deve ter pelo menos 3 caracteres.");
+                return;
             }
 
-            // Procura na lista alguém com o mesmo usuário E a mesma senha
+            // Validação 2: e-mail precisa ter @ e ponto
+            if (!email.value.includes("@") || !email.value.includes(".")) {
+                marcarErro(email, "Digite um e-mail válido.");
+                return;
+            }
+
+            // Validação 3: usuário sem espaços
+            if (usuario.value.includes(" ")) {
+                marcarErro(usuario, "O usuário não pode ter espaços.");
+                return;
+            }
+
+            // Validação 4: senha com pelo menos 6 caracteres
+            if (senha.value.length < 6) {
+                marcarErro(senha, "A senha deve ter pelo menos 6 caracteres.");
+                return;
+            }
+
+            // Validação 5: as duas senhas precisam ser iguais
+            if (senha.value !== confirmarSenha.value) {
+                marcarErro(confirmarSenha, "As senhas não são iguais.");
+                return;
+            }
+
+            // ===== SALVANDO O CADASTRO NO NAVEGADOR =====
+
+            // 1. Busca a lista de usuários já salvos no localStorage.
+            //    O localStorage só guarda TEXTO, então usamos JSON.parse
+            //    para transformar o texto de volta em uma lista (array).
+            //    Se ainda não existir nada salvo, começamos com uma lista vazia [].
+            const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+            // 2. Verifica se o nome de usuário já foi cadastrado antes
             for (let i = 0; i < usuarios.length; i++) {
-                if (usuarios[i].usuario === usuario && usuarios[i].senha === senha) {
-                    usuarioEncontrado = usuarios[i];
+                if (usuarios[i].usuario === usuario.value) {
+                    marcarErro(usuario, "Esse usuário já existe. Escolha outro.");
+                    return;
                 }
             }
 
-            if (usuarioEncontrado !== null) {
+            // 3. Cria um objeto com os dados da nova pessoa
+            const novoUsuario = {
+                nome: nome.value.trim(),
+                email: email.value,
+                usuario: usuario.value,
+                senha: senha.value
+            };
 
-                // Guarda o nome de quem entrou, para a página inicial mostrar
-                localStorage.setItem("usuarioLogado", usuarioEncontrado.nome);
+            // 4. Adiciona o novo usuário no final da lista
+            usuarios.push(novoUsuario);
 
-                mensagem.textContent = "Login realizado! Entrando...";
-                mensagem.style.color = "green";
+            // 5. Salva a lista atualizada no localStorage.
+            //    JSON.stringify transforma a lista em texto para poder salvar.
+            localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-                setTimeout(function() {
-                    window.location.href = "index.html";
-                }, 500);
+            // Passou em todas as validações e foi salvo!
+            mostrarMensagem(
+                "Cadastro realizado, " + nome.value.trim() + "! Redirecionando para o login...",
+                "green"
+            );
 
-            } else {
-
-                mensagem.textContent = "Usuário ou senha incorretos.";
-                mensagem.style.color = "red";
-            }
+            setTimeout(function() {
+                window.location.href = "login.html";
+            }, 1500);
         });
     </script>
 
